@@ -1,11 +1,15 @@
-FROM harbor.app.com/devops-infra/generic-python39:1.0.0
+FROM harbor.app.com/devops-infra/generic-python312:1.0.0
 
-RUN microdnf -y install git
+ENV UV_LINK_MODE=copy
 
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip uv
 
-WORKDIR /
-COPY /app /app
+WORKDIR /app
+# Lock + manifest only first, so the dependency layer caches unless they change.
+COPY pyproject.toml uv.lock .python-version ./
+RUN uv sync --frozen --no-dev
 
-CMD ["python","-m","app.main","--host","0.0.0.0","--port","5000"]
+COPY app ./app
+
+# --no-sync: run from the .venv built above, no network at container start.
+CMD ["uv","run","--no-sync","-m","app.main","--host","0.0.0.0","--port","5000"]
