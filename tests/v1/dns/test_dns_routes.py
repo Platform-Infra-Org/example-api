@@ -1,5 +1,8 @@
-from v1.dns.conf import API_PREFIX
+from app.v1.dns.conf import config
 from fastapi.encoders import jsonable_encoder
+
+# The create/delete routes are registered with a trailing slash under the prefix.
+API_PREFIX = f"{config.API_PREFIX}/"
 
 def test_create_valid_dns_record(client, valid_create_dns_record, authenticated_headers):
     response = client.post(API_PREFIX, json=jsonable_encoder(valid_create_dns_record), headers=authenticated_headers)

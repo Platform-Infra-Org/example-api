@@ -6,7 +6,7 @@ import sys
 import os
 from loguru import logger
 
-def get_v1_dns_router(awx_client):
+def get_v1_dns_router(awx_client, provider=None):
 
     router = APIRouter(prefix=config.API_PREFIX, tags = config.API_TAGS)
 
@@ -18,7 +18,7 @@ def get_v1_dns_router(awx_client):
     async def create(record: DNSRecordCreate, request: Request) -> DNSRecordResponse:
         logger.info(f"Creating a DNS {record.spec.record_type} record: {record.spec.record_name}")
         logger.info(f"launching AWX job template for creating DNS record: {record.spec.record_name}")
-        response = await create_dns(record, awx_client)
+        response = await create_dns(record, awx_client, provider)
         return response
 
     @router.delete("/",
@@ -28,7 +28,7 @@ def get_v1_dns_router(awx_client):
     )
     async def delete(record: DNSRecordDelete, request: Request):
         logger.info(f"Deleting a DNS {record.spec.record_type} record: {record.spec.record_name}")
-        response = await delete_dns(record, awx_client)
+        response = await delete_dns(record, awx_client, provider)
         return response
 
     @router.put("/{record_name}", 

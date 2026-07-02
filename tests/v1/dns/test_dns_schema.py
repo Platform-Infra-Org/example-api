@@ -1,5 +1,5 @@
 import pytest
-from v1.dns.schemas import DNSRecordCreate, DNSRecordDelete
+from app.v1.dns.schemas import DNSRecordCreate, DNSRecordDelete
 from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
 

@@ -41,4 +41,16 @@ class ExampleStaticSettings(BaseSettings):
 
     TEAM_NAME: str = Field(description="Team name used as Vault mount path prefix.")
 
+    # Remote Config provider (optional). When CONFIG_API_URL is set, create_app wires
+    # the library's enable_remote_config_api against that upstream. The outbound-auth
+    # knobs (CONFIG_REMOTE_*) are read by the library's ConfigRemoteSettings from env.
+    CONFIG_API_URL: Optional[str] = Field(
+        default=None,
+        description="Base URL of the upstream Config API. When set, the Remote Config provider is wired.",
+    )
+    CONFIG_API_REMOTE_PREFIX: str = Field(
+        default="/api/v1",
+        description="Route prefix under which the upstream Config API serves /config, /naming, /projects.",
+    )
+
 global_config = ExampleStaticSettings()
