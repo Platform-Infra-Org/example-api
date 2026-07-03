@@ -53,6 +53,8 @@ steps:
       from_secret: artifactory_token
     repo: docker-dev-local/example-api
     tags: ${CI_COMMIT_TAG}
+    build_args:
+      APP_VERSION: ${CI_COMMIT_TAG}
   # depends_on: [SonarQube, Test V1, Test V2]
   when:
     event: tag

@@ -24,6 +24,6 @@ class HaProxyConfig(BaseSettings):
 
     API_PREFIX: StrictStr = Field(default="/api/example/v1/haproxy", description="HaProxy error ")
 
-    API_TAGS: list[str] = Field(default=["v1 - HaProxy Operations"] ,descriptin="Tags used for OpenAPI documentation grouping.")
+    API_TAGS: list[str] = Field(default=["v1 - HaProxy Operations"] ,description="Tags used for OpenAPI documentation grouping.")
 
 config = HaProxyConfig()

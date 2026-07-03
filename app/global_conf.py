@@ -7,8 +7,13 @@ class ExampleStaticSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     API_TITLE: str = Field(
-        description="API title for the swagger", 
-        default="Domain Services API - Example API",
+        description="API title for the swagger",
+        default="Example API",
+    )
+
+    APP_VERSION: str = Field(
+        default="v1.0.0",
+        description="Release version shown in the Swagger UI; injected at image build time from the git tag (see README).",
     )
 
     AWX_URL: str = Field(
@@ -51,6 +56,21 @@ class ExampleStaticSettings(BaseSettings):
     CONFIG_API_REMOTE_PREFIX: str = Field(
         default="/api/v1",
         description="Route prefix under which the upstream Config API serves /config, /naming, /projects.",
+    )
+    
+    CONFIG_POLL_INTERVAL_SECONDS: int = Field(
+        default=5,
+        description="Interval for the background loop that syncs the live allowlists (from the upstream) and invalidates the cached OpenAPI schema.",
+    )
+
+    CONFIG_CACHE_TTL_SECONDS: int = Field(
+        default=60,
+        description="TTL (seconds) for the in-memory cache of upstream config/naming/projects responses.",
+    )
+
+    CONFIG_SERVE_STALE_ON_ERROR: bool = Field(
+        default=False,
+        description="When the upstream is down/5xx, serve the last good (expired) cached response instead of 502.",
     )
 
 global_config = ExampleStaticSettings()

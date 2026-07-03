@@ -31,7 +31,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from tashtiot_apis_library import AWX
-from tashtiot_apis_library.schemas import MetadataRequest
+from tashtiot_apis_library.fastapi_template.config_api import InfraMetadata
 
 from app.v1.dns.schemas import (
     DNSRecordCreate,
@@ -70,7 +70,7 @@ def authenticated_headers():
 
 @pytest.fixture
 def metadata_request():
-    return MetadataRequest(
+    return InfraMetadata(
         project="test", network="net", region="kirya", space="net", environment="test"
     )
 

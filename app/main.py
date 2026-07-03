@@ -1,3 +1,5 @@
+import argparse
+
 from fastapi import FastAPI
 from loguru import logger
 from .v1.dns.routes import get_v1_dns_router
@@ -17,7 +19,11 @@ def create_app() -> FastAPI:
     # enable_auth wires the library's global AuthMiddleware, which protects every route
     # (except docs/metrics/health/probes). It only activates when AUTH_ENABLED=true and one
     # AUTH_* verification material is set; otherwise the app boots open. See README.
-    app = general_create_app(enable_auth=True)
+    app = general_create_app(
+        enable_auth=True,
+        title=global_config.API_TITLE,
+        version=global_config.APP_VERSION,
+    )
     
     # Configure external services objects
     chat_client = BaseAPI(global_config.CHAT_API_URL, headers={"x-api-token": global_config.CHAT_API_TOKEN}).client
@@ -38,9 +44,10 @@ def create_app() -> FastAPI:
                 app,
                 base_url=global_config.CONFIG_API_URL,
                 remote_prefix=global_config.CONFIG_API_REMOTE_PREFIX,
-                config_path=f"{dns_config.API_PREFIX}/",
-                naming_path=f"{dns_config.API_PREFIX}/",
-                enable_polling=False,
+                coordinate_paths=[f"{dns_config.API_PREFIX}/"],
+                cache_ttl=global_config.CONFIG_CACHE_TTL_SECONDS,
+                poll_interval=global_config.CONFIG_POLL_INTERVAL_SECONDS,
+                serve_stale_on_error=global_config.CONFIG_SERVE_STALE_ON_ERROR,
             )
         except AuthConfigError as exc:
             logger.warning(f"Remote Config provider not enabled (auth misconfigured): {exc}")
@@ -61,6 +68,10 @@ def create_app() -> FastAPI:
     return app
 
 if __name__ == "__main__":
-	app = create_app()
-    
-	uvicorn.run(app, host="0.0.0.0", port=5000)
+    parser = argparse.ArgumentParser(description="Run the infrastructure Config API.")
+    parser.add_argument("--host", default="0.0.0.0", help="Bind host (default: 0.0.0.0).")
+    parser.add_argument("--port", type=int, default=5000, help="Bind port (default: 5000).")
+    args = parser.parse_args()
+
+    app = create_app()
+    uvicorn.run(app, host=args.host, port=args.port)
