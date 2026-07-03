@@ -38,9 +38,10 @@ def create_app() -> FastAPI:
                 app,
                 base_url=global_config.CONFIG_API_URL,
                 remote_prefix=global_config.CONFIG_API_REMOTE_PREFIX,
-                config_path=f"{dns_config.API_PREFIX}/",
-                naming_path=f"{dns_config.API_PREFIX}/",
-                enable_polling=False,
+                coordinate_paths=[f"{dns_config.API_PREFIX}/"],
+                cache_ttl=global_config.CONFIG_CACHE_TTL_SECONDS,
+                poll_interval=global_config.CONFIG_POLL_INTERVAL_SECONDS,
+                serve_stale_on_error=global_config.CONFIG_SERVE_STALE_ON_ERROR,
             )
         except AuthConfigError as exc:
             logger.warning(f"Remote Config provider not enabled (auth misconfigured): {exc}")

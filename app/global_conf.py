@@ -52,5 +52,20 @@ class ExampleStaticSettings(BaseSettings):
         default="/api/v1",
         description="Route prefix under which the upstream Config API serves /config, /naming, /projects.",
     )
+    
+    CONFIG_POLL_INTERVAL_SECONDS: int = Field(
+        default=5,
+        description="Interval for the background loop that syncs the live allowlists (from the upstream) and invalidates the cached OpenAPI schema.",
+    )
+
+    CONFIG_CACHE_TTL_SECONDS: int = Field(
+        default=60,
+        description="TTL (seconds) for the in-memory cache of upstream config/naming/projects responses.",
+    )
+
+    CONFIG_SERVE_STALE_ON_ERROR: bool = Field(
+        default=False,
+        description="When the upstream is down/5xx, serve the last good (expired) cached response instead of 502.",
+    )
 
 global_config = ExampleStaticSettings()

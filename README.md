@@ -193,8 +193,7 @@ if global_config.CONFIG_API_URL:
             app,
             base_url=global_config.CONFIG_API_URL,
             remote_prefix=global_config.CONFIG_API_REMOTE_PREFIX,   # e.g. /api/v1
-            config_path=f"{dns_config.API_PREFIX}/",
-            naming_path=f"{dns_config.API_PREFIX}/",
+            coordinate_paths=[f"{dns_config.API_PREFIX}/"],
             enable_polling=False,
         )
     except AuthConfigError as exc:
