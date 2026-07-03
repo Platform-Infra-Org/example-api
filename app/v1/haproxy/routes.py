@@ -4,7 +4,7 @@ import asyncio
 from .operations import create_haproxy_operation, delete_haproxy_operation, update_haproxy_operation, get_haproxy_operation, haproxy_get_status
 from ...helpers import build_app_name
 import yaml
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status as http_status
 from starlette.responses import JSONResponse
 from loguru import logger
 from tashtiot_apis_library.connectors import ArgoOperationResponse, ExternalServiceError
@@ -23,7 +23,7 @@ def get_router(git: Any, argocd: Any, vault: Any) -> APIRouter:
 
         except ExternalServiceError as external_error:
             app_name = build_app_name(payload.spec.metadata.cluster, payload.spec.metadata.namespace, payload.spec.metadata.name, "haproxy")
-            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).dict(), status_code=http_status.HTTP_502_BAD_GATEWAY)
+            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).model_dump(), status_code=http_status.HTTP_502_BAD_GATEWAY)
 
         # Return a temporary response to client that indicate the creation is in process
         return ArgoOperationResponse(app_name=app_name, status="InProgress")
@@ -35,7 +35,7 @@ def get_router(git: Any, argocd: Any, vault: Any) -> APIRouter:
             app_name = await delete_haproxy_operation(git=git, vault=vault, argocd=argocd, params=params)
         except ExternalServiceError as external_error:
             app_name = build_app_name(params.cluster, params.namespace, params.name, "haproxy")
-            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).dict(), status_code=http_status.HTTP_502_BAD_GATEWAY)
+            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).model_dump(), status_code=http_status.HTTP_502_BAD_GATEWAY)
 
         return ArgoOperationResponse(app_name=app_name, status="InProgress")
 
@@ -46,7 +46,7 @@ def get_router(git: Any, argocd: Any, vault: Any) -> APIRouter:
             app_name = await update_haproxy_operation(git=git, vault=vault, argocd=argocd, payload=payload.spec)
         except ExternalServiceError as external_error:
             app_name = build_app_name(payload.spec.metadata.cluster, payload.spec.metadata.namespace, payload.spec.metadata.name, "haproxy")
-            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).dict(), status_code=http_status.HTTP_502_BAD_GATEWAY)
+            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).model_dump(), status_code=http_status.HTTP_502_BAD_GATEWAY)
 
         return ArgoOperationResponse(app_name=app_name, status="InProgress")
 
@@ -57,7 +57,7 @@ def get_router(git: Any, argocd: Any, vault: Any) -> APIRouter:
             return await get_haproxy_operation(git=git, params=params)
         except ExternalServiceError as external_error:
             app_name = build_app_name(params.cluster, params.namespace, params.name, "haproxy")
-            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).dict(), status_code=http_status.HTTP_502_BAD_GATEWAY)
+            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).model_dump(), status_code=http_status.HTTP_502_BAD_GATEWAY)
         raise
 
     @router.get("/status", name="Get haproxy app status")
@@ -66,7 +66,7 @@ def get_router(git: Any, argocd: Any, vault: Any) -> APIRouter:
             return await haproxy_get_status(git=git, argocd=argocd, params=params)
         except ExternalServiceError as external_error:
             app_name = build_app_name(params.cluster, params.namespace, params.name, "haproxy")
-            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).dict(), status_code=http_status.HTTP_502_BAD_GATEWAY)
+            return JSONResponse(ArgoOperationResponse(stdout=f"Exception in {external_error.service_name}. erros: {external_error.detail}", app_name=app_name, status="Failed", status_code=external_error.status_code).model_dump(), status_code=http_status.HTTP_502_BAD_GATEWAY)
         raise
 
     return router
