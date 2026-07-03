@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from ipaddress import IPv4Address, AddressValueError
 from tashtiot_apis_library.connectors.awx.models import AWXOperationResponse
 from tashtiot_apis_library import OperationRequest
@@ -9,7 +9,8 @@ class DNSRecordCreateSpec(BaseModel):
     record_type: str
     dns_zone: str   
 
-    @validator("ip")
+    @field_validator("ip")
+    @classmethod
     def validate_ip(cls, v: str) -> str:
         """
         Ensure the supplied value is a valid IPv4 address.
@@ -39,7 +40,8 @@ class DNSRecordResponse(AWXOperationResponse):
 class DNSRecordUpdate(BaseModel):
     ip: str
 
-    @validator("ip")
+    @field_validator("ip")
+    @classmethod
     def validate_ip(cls, v: str) -> str:
         """
         Ensure the supplied value is a valid IPv4 address.

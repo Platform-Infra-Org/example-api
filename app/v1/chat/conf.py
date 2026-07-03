@@ -15,7 +15,7 @@ class ChatConfig(BaseSettings):
 
     API_TAGS: list[str] = Field(
         default=["v1 - Chat Operations"],
-        descriptin="Tags used for OpenAPI documentation grouping.",
+        description="Tags used for OpenAPI documentation grouping.",
     )
 
 config = ChatConfig()
