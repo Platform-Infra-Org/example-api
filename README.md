@@ -44,6 +44,10 @@ on the secondary index (both indexes are the same trusted Artifactory).
 
 Both are provided for free by the library's `general_create_app()` — you don't wire them.
 
+The **app version** shown in the Swagger UI comes from the `APP_VERSION` env var (default `v1.0.0`).
+CI passes the release tag when building the image (the `.woodpecker` kaniko step sets
+`build_args: APP_VERSION=${CI_COMMIT_TAG}`); the Dockerfile bakes it into `ENV APP_VERSION`.
+
 ```bash
 # Tests (Python 3.12)
 uv run pytest                       # everything under tests/

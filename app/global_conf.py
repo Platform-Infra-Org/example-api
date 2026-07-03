@@ -7,8 +7,13 @@ class ExampleStaticSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     API_TITLE: str = Field(
-        description="API title for the swagger", 
-        default="Domain Services API - Example API",
+        description="API title for the swagger",
+        default="Example API",
+    )
+
+    APP_VERSION: str = Field(
+        default="v1.0.0",
+        description="Release version shown in the Swagger UI; injected at image build time from the git tag (see README).",
     )
 
     AWX_URL: str = Field(
