@@ -157,7 +157,8 @@ async def delete_haproxy_operation(git: Git, vault: Vault, argocd: ArgoCD, param
 
     # If not entered into except block, store the existing secret for backup and flag it as existed for RollBack purposes
     else:
-        secret_backup = existing_secret
+        # read_secret returns a VaultSecret model; the secret's key/values are on `.data`.
+        secret_backup = existing_secret.data
         secret_existed = True
 
     # Start the deleting with deleting the values file
@@ -248,7 +249,8 @@ async def update_haproxy_operation(git: Git, vault: Vault, argocd: ArgoCD, paylo
     if not yaml_data_equals(current_yaml, new_yaml):
         await git.modify_file(path, f"Modify haproxy for {app_name} in {cluster}/{namespace}", new_yaml)
 
-    secret_path = f"/perimeter/haproxy/{cluster}/{namespace}/{app_name}"
+    # Same path as create/delete (keyed on the instance name, not the ArgoCD app name).
+    secret_path = f"/perimeter/haproxy/{cluster}/{namespace}/{name}"
 
     previous_secret_data: Dict[str, Any] = {}
     secret_existed = False
@@ -262,7 +264,7 @@ async def update_haproxy_operation(git: Git, vault: Vault, argocd: ArgoCD, paylo
                 if vault_exc.status_code != 404:
                     raise
             else:
-                previous_secret_data = existing_secret or {}
+                previous_secret_data = existing_secret.data
                 secret_existed = True
 
             await vault.write_secret(secret_path, secrets)
